@@ -97,9 +97,9 @@ if st.button("AIで解析して報告書を作成"):
                 elif score > 0.70:
                     harassment_level = "中（経過観察および証拠保全を推奨）"
 
-            JST = datetime.timezone(datetime.timedelta(hours=9))
+JST = datetime.timezone(datetime.timedelta(hours=9))
 current_time = datetime.datetime.now(JST).strftime("%Y年%m月%d日 %H:%M:%S")
-
+            
             st.success("解析が完了しました。")
             
             st.write("---")
