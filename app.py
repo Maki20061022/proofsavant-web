@@ -2,23 +2,89 @@ import streamlit as st
 from transformers import pipeline
 import datetime
 
+# ページの設定（タイトルやアイコン、レイアウト）
+st.set_page_config(
+    page_title="ProofSavant - 公式事案記録システム",
+    page_icon="⚖️",
+    layout="centered"
+)
+
+# 洗練されたスタイリッシュなカスタムCSSの適用
+st.markdown("""
+<style>
+    /* 全体のトーン＆マナー調整 */
+    .main {
+        background-color: #0e1117;
+    }
+    /* ヘッダーの装飾 */
+    h1 {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: #f0f2f6;
+        border-bottom: 3px solid #e74c3c;
+        padding-bottom: 10px;
+    }
+    h3 {
+        color: #c9d1d9;
+    }
+    /* 入力フォームのラベルを見やすく調整 */
+    .stTextInput label, .stTextArea label {
+        font-weight: 600;
+        color: #e6edf3;
+    }
+    /* 解析ボタンのスタイリング */
+    .stButton>button {
+        width: 100%;
+        background: linear-gradient(135deg, #2980b9, #2c3e50);
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 12px;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: 0.3s;
+    }
+    .stButton>button:hover {
+        background: linear-gradient(135deg, #3498db, #34495e);
+        box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+    }
+    /* ダウンロードボタンのスタイリング */
+    .stDownloadButton>button {
+        width: 100%;
+        background: linear-gradient(135deg, #27ae60, #1e8449);
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 12px;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .stDownloadButton>button:hover {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+    }
+</style>
+""", unsafe_allow_html=True)
+
 @st.cache_resource
 def load_model():
     return pipeline("sentiment-analysis", model="koheiduck/bert-japanese-finetuned-sentiment")
 
-st.title("ProofSavant")
+st.title("⚖️ ProofSavant")
 st.subheader("公式・被害事案記録システム")
-st.write("被害の状況をAIが解析し、客観的なデータとして記録します。")
+st.markdown("<p style='color: #8b949e; font-size: 11pt;'>被害の状況を高精度AIが解析し、客観的な法的証拠データとして記録・出力します。</p>", unsafe_allow_html=True)
 
-date = st.text_input("1. それは「いつ」起きましたか？")
-location = st.text_input("2. 「どこで」起きましたか？")
-aggressor = st.text_input("3. 「誰から」被害を受けましたか？")
-witnesses = st.text_input("4. 目撃者や証拠はありますか？")
-incident_desc = st.text_area("5. 被害の具体的な状況や、辛い気持ちを教えてください。")
+st.write("---")
+
+date = st.text_input("1. それは「いつ」起きましたか？", placeholder="例：今日の15時ごろ")
+location = st.text_input("2. 「どこで」起きましたか？", placeholder="例：アルバイト先の店舗内")
+aggressor = st.text_input("3. 「誰から」被害を受けましたか？", placeholder="例：大声で怒鳴ってきた客")
+witnesses = st.text_input("4. 目撃者や証拠はありますか？", placeholder="例：店舗の防犯カメラ映像、同僚の証言")
+incident_desc = st.text_area("5. 被害の具体的な状況や、辛い気持ちを教えてください。", placeholder="例：自分のミスではないのに、一方的に怒鳴られ続けて非常に怖い思いをした...")
 
 if st.button("AIで解析して報告書を作成"):
     if incident_desc:
-        with st.spinner("AIが心理状態を解析中..."):
+        with st.spinner("AIが心理状態を高精度で解析中..."):
             nlp = load_model()
             result = nlp(incident_desc)[0]
             label = result['label']
@@ -41,7 +107,6 @@ if st.button("AIで解析して報告書を作成"):
             st.write(f"・AI確信度スコア: **{score:.4f} / 1.0000**")
             st.error(f"・システム判定: 【 {harassment_level} 】")
 
-            # 美しいデザインのHTMLレポートを動的生成
             html_content = f"""
             <!DOCTYPE html>
             <html lang="ja">
@@ -81,7 +146,6 @@ if st.button("AIで解析して報告書を作成"):
             </html>
             """
 
-            # 【追加】画面上にダウンロードボタンを表示する
             st.download_button(
                 label="📥 公式報告書（印刷用ファイル）をダウンロード",
                 data=html_content,
